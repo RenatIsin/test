@@ -10,7 +10,6 @@ import ru.yandex.qatools.htmlelements.element.TextBlock;
  */
 public class TitleComponent extends HtmlElement {
 
-//    @FindBy
     private TextBlock title;
 
     @FindBy(className = "payment-page__title_inner")
@@ -20,7 +19,4 @@ public class TitleComponent extends HtmlElement {
         return city;
     }
 
-    public boolean cityIs(String name){
-        return city().getText().equals(name);
-    }
 }

@@ -1,5 +1,6 @@
 package pages;
 
+import elements.Modal;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -23,5 +24,9 @@ public class BasePage {
 
     public void open(String url){
         driver.get(url);
+    }
+
+    public Modal popUp(){
+        return new Modal(driver());
     }
 }

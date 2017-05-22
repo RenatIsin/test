@@ -43,4 +43,24 @@ public class PayForm extends Form {
     public MarkedInput paySum() {
         return formFields.get(3);
     }
+
+    public PayForm fillCode(String value){
+        payCode().sendKeys(value);
+        return this;
+    }
+
+    public PayForm fillPeriod(String value){
+        payPeriod().sendKeys(value);
+        return this;
+    }
+
+    public PayForm fillInsurance(String value){
+        insurance().sendKeys(value);
+        return this;
+    }
+
+    public PayForm fillSum(String value){
+        paySum().sendKeys(value);
+        return this;
+    }
 }

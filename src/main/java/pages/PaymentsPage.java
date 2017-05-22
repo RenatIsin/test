@@ -14,7 +14,9 @@ import ru.yandex.qatools.htmlelements.loader.decorator.HtmlElementLocatorFactory
  */
 public class PaymentsPage extends BasePage{
 
-    @FindBy(xpath = "//*[@data-reactid=\"231\"]")
+    private String url = "https://www.tinkoff.ru/payments/";
+
+    @FindBy(className = "ui-menu")
     private UIMenuItemsList paymentTypes;
 
     @FindBy(tagName = "section")
@@ -39,6 +41,12 @@ public class PaymentsPage extends BasePage{
         super(driver);
         PageFactory.initElements(new HtmlElementDecorator(new HtmlElementLocatorFactory(driver)), this);
     }
+
+    public PaymentsPage open(){
+        open(url);
+        return this;
+    }
+
 
     public UIMenuItemsList paymentTypes() {
         return paymentTypes;
@@ -66,5 +74,16 @@ public class PaymentsPage extends BasePage{
 
     public TextBlock banner(){
         return banner;
+    }
+
+    public PaymentsPage openPayType(String name) {
+        paymentTypes().withTitle(name).click();
+        return this;
+    }
+
+    public PaymentsPage chooseCity(String city) {
+        payments().title().city().click();
+        popUp().select(city);
+        return this;
     }
 }

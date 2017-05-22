@@ -1,17 +1,21 @@
 import elements.*;
-import org.hamcrest.Matchers;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebElement;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import pages.PaymentsPage;
 import pages.StartPage;
+import ru.yandex.qatools.ashot.Screenshot;
+import ru.yandex.qatools.ashot.comparison.ImageDiffer;
 import ru.yandex.qatools.htmlelements.element.Link;
+
 
 import static matchers.IncorrectInputMatcher.markedAsErrorWithText;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static ru.yandex.qatools.htmlelements.matchers.WebElementMatchers.hasText;
 
@@ -24,38 +28,34 @@ public class SimpleTest extends BaseTest {
     private PaymentsPage paymentsPage;
 
     @BeforeClass
-    public void initPages(){
+    public void initPages() {
         startPage = new StartPage(driver());
         paymentsPage = new PaymentsPage(driver());
     }
 
     @AfterClass
-    public void stop(){
+    public void stop() {
         driver().close();
     }
 
     @Test
-    public void test(){
+    public void test() {
         HeaderMenu menu = startPage.open().header().menu();
-        menu.paymentsLink().click();
-        paymentsPage.paymentTypes().withTitle("Коммунальные платежи").click();
-
-        TitleComponent title = paymentsPage.payments().title();
-        if(!title.cityIs("Москве")){
-            title.city().click();
-            new Modal(driver()).select("г. Москва");
+        menu.goToPayments();
+        paymentsPage.openPayType("Коммунальные платежи");
+        if (paymentsPage.payments().cityIsNot("Москве")) {
+            paymentsPage.chooseCity("г. Москва");
         }
+
         Link service = paymentsPage.payments().items().onPosition(1);
         assertThat(service, hasText("ЖКУ-Москва"));
 
         String serviceName = service.getText();
         service.click();
-        byte[] page = ((TakesScreenshot)driver()).getScreenshotAs(OutputType.BYTES);
+        Screenshot screen1 = screenIt(paymentsPage.banner());
         paymentsPage.tabs().select("ОПЛАТИТЬ ЖКУ В МОСКВЕ");
 
-
         PayForm payForm = paymentsPage.payForm();
-
         payForm.submit();
         String emptyError = "Поле обязательное";
         String incorrectError = "Поле неправильно заполнено";
@@ -64,7 +64,7 @@ public class SimpleTest extends BaseTest {
         assertThat(payForm.payPeriod(), markedAsErrorWithText(emptyError));
         assertThat(payForm.paySum(), markedAsErrorWithText(emptyError));
 
-       /*  checkIncorrectInput(payForm.payCode(), "280132100", incorrectError);
+        checkIncorrectInput(payForm.payCode(), "280132100", incorrectError);
         checkIncorrectInput(payForm.payCode(), RandomStringUtils.randomNumeric(300), incorrectError);
         checkIncorrectInput(payForm.payCode(), "28013210011", incorrectError);
         checkIncorrectInput(payForm.payCode(), "-8013210011", incorrectError);
@@ -95,16 +95,19 @@ public class SimpleTest extends BaseTest {
         checkIncorrectInput(payForm.paySum(), "0", "Минимальная сумма перевода - 10 \u20BD");
         checkIncorrectInput(payForm.paySum(), "5", "Минимальная сумма перевода - 10 \u20BD");
         checkIncorrectInput(payForm.paySum(), "9", "Минимальная сумма перевода - 10 \u20BD");
-*/
-        menu.paymentsLink().click();
+
+        menu.goToPayments();
         paymentsPage.search().sendKeys(serviceName);
         UILink neededService = paymentsPage.result().onPostition(1);
         assertThat(neededService.title().getText(), equalTo(serviceName));
         neededService.click();
 
-        assertThat(new String(page), equalTo(new String(((TakesScreenshot)driver()).getScreenshotAs(OutputType.BYTES))));
+        assertThat(new ImageDiffer().makeDiff(screen1, screenIt(paymentsPage.banner()))
+                .hasDiff(), is(false)
+        );
 
-        System.out.println(12123);
+        menu.goToPayments();
+        paymentsPage.openPayType("Коммунальные платежи").chooseCity("г. Санкт-Петербург").payments().noItem(serviceName);
     }
 
     private void checkIncorrectInput(MarkedInput field, String input, String errorMessage) {

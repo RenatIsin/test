@@ -21,13 +21,7 @@ public class UIMenuItemsList extends HtmlElement {
 
 
     public Link withTitle(String name){
-        return items.stream().filter(item -> (item.getText().equals(name))).findFirst().orElseThrow(AssertionError::new);
-//        try {
-//            TimeUnit.SECONDS.sleep(1);
-//            return new Link(this.findElement(By.xpath("//a[@title=\"" + name + "\"]")));
-//        } catch (InterruptedException e) {
-//            throw new AssertionError(e);
-//        }
+        return items.stream().filter(item -> (item.getText().equals(name))).findFirst().orElse(null);
     }
 
     //number start from 1 ...

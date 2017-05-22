@@ -11,11 +11,8 @@ import ru.yandex.qatools.htmlelements.loader.decorator.HtmlElementLocatorFactory
  */
 public class Header {
 
-//    @FindBy(css = "[data-reactid=\"20\"]")
-//    HeaderMenu menu;
-
-    @FindBy(className = "ui-menu-primary")
-    HeaderMenu menu;
+    @FindBy(xpath = "/html")
+    private HeaderMenu menu;
 
     public Header(WebDriver driver){
         PageFactory.initElements(new HtmlElementDecorator(new HtmlElementLocatorFactory(driver)), this);
@@ -24,4 +21,5 @@ public class Header {
     public HeaderMenu menu() {
         return menu;
     }
+
 }
