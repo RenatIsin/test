@@ -20,7 +20,6 @@ public class BaseTest {
 
     //do initialization of driver for all tests
     public void initDriver(){
-        System.getProperties().setProperty("webdriver.chrome.driver", "D:\\Testing\\chromedriver.exe");
         driver = new ChromeDriver();
         driver().manage().window().maximize();
     }
